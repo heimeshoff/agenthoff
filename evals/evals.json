@@ -1,0 +1,26 @@
+{
+  "skill_name": "agenthoff",
+  "evals": [
+    {
+      "id": 1,
+      "name": "brainstorm-from-zero",
+      "prompt": "I want to build a small personal tool that helps me track the books I've read, with notes and tags per book, and lets me search across them. Let's brainstorm the vision for this.",
+      "expected_output": "A Socratic modeling session that ends with .agenthoff/vision.md capturing purpose, users, problem, success, non-goals, ubiquitous language seed, and open questions. Possibly a context-map.md + contexts/<name>/README.md. No code.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "model-capture-and-work",
+      "prompt": "I want to add a 'reading session' concept — each book can have multiple reading sessions with a start date, end date, and a note. Model this, promote it to todo, and then run the worker on it.",
+      "expected_output": "model captures the idea as one or more tasks in contexts/books/ (backlog then todo). Then work runs the worker which either writes code + ADR + updates BC README + commits, OR bounces to backlog with a specific reason.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "research-and-integration",
+      "prompt": "I want to sync my book list with Goodreads. Research what APIs Goodreads exposes currently and model the integration.",
+      "expected_output": "research produces a knowledge/research/ report noting that the Goodreads API was deprecated in 2020 and new access is closed. model consults the architect agent and produces tasks + ADRs reflecting the reality (e.g., scrape, use OAuth workaround, or pivot to an alternative catalog).",
+      "files": []
+    }
+  ]
+}
