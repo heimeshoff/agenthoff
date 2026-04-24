@@ -69,6 +69,21 @@ When a research report influences a task or decision:
 
 This bidirectional linking is how knowledge stays findable.
 
+## Protocol logging
+
+After writing the report, prepend an entry to `.agenthoff/knowledge/protocol.md` (creating the file with its header if missing — see brainstorm/model/work skills for the header template):
+
+```markdown
+## YYYY-MM-DD HH:MM -- Research: [topic]
+
+**Type:** Research
+**Requested by:** brainstorm | model | work | user
+**Report:** knowledge/research/<slug>-<date>.md
+**Summary:** [2-3 bullet findings]
+
+---
+```
+
 ## Parallelism
 
 Research is naturally parallelizable. If the user asks for research on multiple distinct topics, spawn multiple researcher agents rather than serializing. Each writes its own report.

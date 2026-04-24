@@ -24,6 +24,17 @@ Decide which mode applies based on what the user said and the current state of `
 - If the user says "promote X" / "X is ready" → PROMOTE
 - If ambiguous, ask once. Don't guess wrong and then have to undo.
 
+### Identifying which task the user means (REFINE / PROMOTE)
+
+When the user references an existing task, support all of these:
+
+- **Exact id** — `books-007` → that exact task
+- **Numeric only** — `007` → find task with that number across all BCs; if multiple BCs have the same number, list them and ask
+- **Keyword / fuzzy** — `password` or `reading session` → match substring (case-insensitive) against task `title` and filename across `backlog/` and `todo/` of all BCs
+- **No argument** — list all backlog (and todo, for PROMOTE context) tasks grouped by BC and let the user pick
+
+When there are multiple matches, show a compact summary (id, title, status, BC) and ask which one — don't silently pick the first.
+
 ## Before acting
 
 Read the current state:
@@ -136,3 +147,50 @@ The orchestrator picks specialists. Respect its output and integrate it into the
 ## Research is fair game mid-model
 
 If the user or the orchestrator hits an "we don't know enough about X" wall, kick off the `research` skill in parallel. Continue modeling what you can while research runs; fold its report into the task's Notes section when ready.
+
+## Protocol logging
+
+After each action — CAPTURE, REFINE, or PROMOTE — prepend an entry to `.agenthoff/knowledge/protocol.md`. If `protocol.md` doesn't exist, create it with:
+
+```markdown
+# Protocol
+
+Chronological log of everything that happens in this project.
+Newest entries on top.
+
+---
+```
+
+Then prepend the appropriate entry right after the `---` on line 4:
+
+```markdown
+## YYYY-MM-DD HH:MM -- Model / Captured: <task-id> - [title]
+
+**Type:** Model / Capture
+**BC:** <bc-name>
+**Filed to:** backlog | todo
+**Summary:** [1-2 sentences on what the idea is]
+
+---
+
+## YYYY-MM-DD HH:MM -- Model / Refined: <task-id> - [title]
+
+**Type:** Model / Refine
+**BC:** <bc-name>
+**Status after:** backlog | todo
+**Summary:** [what was clarified, added, or split]
+**Split into:** [list of new task ids, if split]
+**ADRs written:** [list of ADR ids, if any]
+
+---
+
+## YYYY-MM-DD HH:MM -- Model / Promoted: <task-id> - [title]
+
+**Type:** Model / Promote
+**BC:** <bc-name>
+**From → To:** backlog → todo
+
+---
+```
+
+If the action is non-trivial (multiple tasks created from one capture, refinement that produced ADRs, batch promotion), one entry per "thing the user asked for" is enough — don't prepend five entries for a single conversation turn.

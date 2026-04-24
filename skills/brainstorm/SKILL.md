@@ -117,6 +117,35 @@ If a specific question requires outside knowledge (e.g., "how do other people so
 
 If a foundational decision is made during this session (e.g., "we'll treat Customer and Account as distinct contexts", "this is a personal tool, not a multi-tenant product"), write an ADR in `.agenthoff/knowledge/decisions/` using the format in `references/adr-template.md`. Vision-level decisions get `scope: global` in frontmatter.
 
+## Protocol logging
+
+After the session produces artifacts, prepend an entry to `.agenthoff/knowledge/protocol.md`. If the file doesn't exist, create it with:
+
+```markdown
+# Protocol
+
+Chronological log of everything that happens in this project.
+Newest entries on top.
+
+---
+```
+
+Then prepend right after the `---` on line 4:
+
+```markdown
+## YYYY-MM-DD HH:MM -- Brainstorm: [topic]
+
+**Type:** Brainstorm
+**Outcome:** vision created | vision revised | vision extended
+**BCs identified:** [list or "none"]
+**Summary:** [2-3 sentences on what was decided]
+**ADRs written:** [list of ADR ids or "none"]
+
+---
+```
+
+One entry per session, not one per exchange.
+
 ## What you leave behind
 
 At the end of a successful brainstorm:
@@ -124,4 +153,5 @@ At the end of a successful brainstorm:
 - `.agenthoff/context-map.md` exists if warranted
 - `.agenthoff/contexts/<name>/README.md` exists for each identified BC
 - `.agenthoff/knowledge/decisions/` contains ADRs for any foundational decisions
+- `.agenthoff/knowledge/protocol.md` has a new entry at the top
 - The user feels they discovered the shape of the thing, not that you told them what it is
