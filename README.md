@@ -13,7 +13,19 @@ From inside Claude Code, in the project where you want the plugin:
 
 `<path-to-this-repo>` is the absolute path to a local clone (e.g. `C:/src/heimeshoff/tooling/agenthoff`) or a `git` URL. The first command registers this repo as a marketplace; the second installs the plugin from it. Restart Claude Code afterward so hooks and skills are picked up.
 
-To update later: `/plugin marketplace update agenthoff` then `/plugin update agenthoff@agenthoff`.
+### Updates
+
+Local/third-party marketplaces have auto-update **disabled** by default. To enable it, run `/plugin`, go to the **Marketplaces** tab, select `agenthoff`, and choose "Enable auto-update". Claude Code will then refresh on startup and prompt you to run `/reload-plugins` when there's a new version.
+
+To update manually:
+
+```
+/plugin marketplace update agenthoff
+/plugin update agenthoff@agenthoff
+/reload-plugins
+```
+
+Note: updates are only detected when the version *changes*. The `version` field in `.claude-plugin/plugin.json` is the authority — bump it on every release, or omit it so Claude Code falls back to the git commit SHA (every commit then counts as a new version).
 
 ## The four skills
 
