@@ -4,12 +4,16 @@ A DDD-flavored agentic harness for Claude Code. Installed as a plugin once, used
 
 ## Install
 
-```bash
-# From inside Claude Code
-/plugin install <path-to-this-repo>
+From inside Claude Code, in the project where you want the plugin:
+
+```
+/plugin marketplace add <path-to-this-repo>
+/plugin install agenthoff@agenthoff
 ```
 
-Or symlink/clone this repo into your Claude Code plugin directory. After install, restart Claude Code so hooks and skills are picked up.
+`<path-to-this-repo>` is the absolute path to a local clone (e.g. `C:/src/heimeshoff/tooling/agenthoff`) or a `git` URL. The first command registers this repo as a marketplace; the second installs the plugin from it. Restart Claude Code afterward so hooks and skills are picked up.
+
+To update later: `/plugin marketplace update agenthoff` then `/plugin update agenthoff@agenthoff`.
 
 ## The four skills
 
