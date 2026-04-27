@@ -15,6 +15,16 @@ From inside Claude Code, in the project where you want the plugin:
 
 ### Updates
 
+#### Releasing a change (maintainer side)
+
+When you change anything that consumer projects should pick up — a skill, an agent, a hook, a slash command — bump the `version` field in `.claude-plugin/plugin.json` and commit. Updates are only detected when the version *changes*: that field is the authority. Use semver: bump the patch for fixes, the minor for new behavior, the major for breaking changes to skill contracts or hook shapes.
+
+If you'd rather not bump by hand, omit the `version` field entirely and Claude Code falls back to the git commit SHA — every commit then counts as a new version. The trade-off is that consumers see noise from every internal commit, not just intentional releases.
+
+After committing (and pushing, if the marketplace points at a `git` URL rather than a local path), consumers can pull the change with the steps below.
+
+#### Pulling a change (consumer side)
+
 Local/third-party marketplaces have auto-update **disabled** by default. To enable it, run `/plugin`, go to the **Marketplaces** tab, select `agenthoff`, and choose "Enable auto-update". Claude Code will then refresh on startup and prompt you to run `/reload-plugins` when there's a new version.
 
 To update manually:
@@ -25,7 +35,7 @@ To update manually:
 /reload-plugins
 ```
 
-Note: updates are only detected when the version *changes*. The `version` field in `.claude-plugin/plugin.json` is the authority — bump it on every release, or omit it so Claude Code falls back to the git commit SHA (every commit then counts as a new version).
+The first command refreshes the marketplace's view of the source repo, the second pulls the new plugin version into your project, and the third reloads skills/hooks so the change is live in the current session.
 
 ## The four skills
 
@@ -54,6 +64,23 @@ research    ←  (called from any of the above when external knowledge is needed
 - **model** has three modes: CAPTURE (new ideas), REFINE (deepen a backlog item), PROMOTE (backlog → todo). It routes through the orchestrator to the right specialist.
 - **work** is a loop, not a one-shot. It resumes interrupted sessions, builds the dependency DAG, dispatches up to 3 parallel workers, and picks up tasks promoted mid-run.
 - **research** is called explicitly by you or implicitly when another skill hits an "I don't know enough" wall.
+
+## Architecture foundation and the first prototype
+
+The Socratic brainstorm phase deliberately stays code-free *and* tech-choice-free — but ending there would leave foundation calls (stack, persistence, transport, deployment topology, cross-cutting concerns) to be made later, one at a time, under feature pressure. So `brainstorm` ends with a structured **architecture foundation** step that lines those decisions up explicitly, while the room is still calm.
+
+The closing step:
+
+1. **Calls the `architect` specialist** via the orchestrator with the vision and context map. The architect proposes options + trade-offs + ADR drafts across stack, persistence, integration, deployment, and obvious cross-cutting concerns.
+2. **Emits one `type: decision` task per area** (in `contexts/foundation/todo/` for cross-cutting, or the relevant BC for BC-local choices). The architect's ADR draft lives in the task's `Notes` — the user reviews it in queue, and `work` commits each ADR as its own commit. Foundation choices ride the same protocol/commit rail as features.
+3. **Emits a `type: spike` walking-skeleton task** that depends on every foundation decision. Feature-thin, architecture-thick: the stack runs, persistence connects, BCs talk to each other if there's more than one, a request makes it through end-to-end. This is the project's **first prototype** — the moment code first appears in the repo.
+4. **If the vision implies any frontend, emits a `design-system-001-styleguide` task** in `contexts/design-system/todo/`, depending on the walking skeleton. Acceptance includes a human-in-the-loop sign-off.
+
+The closing step is skippable when it doesn't fit: mature project being adopted (offer ADR backfill of existing architecture instead), single-file script with no integration questions, no frontend (skip just the styleguide).
+
+### Styleguide gate for frontend work
+
+Once the styleguide task exists, **every frontend task in any BC must `depends_on` the styleguide**. `model` enforces this on capture: if you try to capture frontend work in a project that has no styleguide task yet, it stops and asks you to either run `brainstorm`'s foundation step or capture a styleguide task explicitly first. The styleguide is reviewed with you before any BC implements its UI — that prevents per-BC drift in the design language.
 
 ## Project state layout
 

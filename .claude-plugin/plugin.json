@@ -1,6 +1,6 @@
 {
   "name": "agenthoff",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "DDD-flavored agentic harness: Socratic vision modeling, bounded contexts, parallel workers, decision records",
   "author": {
     "name": "Marco Heimeshoff"
