@@ -133,6 +133,16 @@ rough sketches — anything a worker or refiner would want.
 
 When modeling surfaces a genuine architectural or domain decision that deserves its own treatment (rather than being an implementation detail of a feature), create a task with `type: decision`. Its output when worked is an ADR in `.agenthoff/knowledge/decisions/`, not code. This lets decisions flow through the same backlog discipline as features.
 
+## Frontend tasks: styleguide gate
+
+If the project has a `contexts/design-system/` BC with a styleguide task (set up by `brainstorm`'s architecture foundation step), every captured frontend / UI task in any BC must include the styleguide task in its `depends_on`. Read the BC's README before capturing — frontend-bearing BCs carry a note that points at the styleguide task id.
+
+If you're capturing the project's first frontend task and no styleguide task exists, **stop and surface that**. Offer either:
+- Running `brainstorm` in extension mode to add the foundation step, or
+- Capturing a `design-system-001-styleguide` task explicitly, with this captured task depending on it.
+
+Never promote a frontend task to `todo/` ahead of the styleguide. The styleguide is reviewed with the user before any BC implements its UI — that's the gate.
+
 ## Delegating to the orchestrator
 
 The `model` skill itself does not do deep modeling — it routes. For anything non-trivial, hand off to the `orchestrator` agent with:

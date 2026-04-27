@@ -33,7 +33,7 @@ Skills auto-trigger from natural-language phrases — no slash commands to memor
 
 | Skill | Triggered by | Produces |
 |---|---|---|
-| **brainstorm** | "let's brainstorm", "start a new project", "create a vision", "model this from scratch" | `.agenthoff/vision.md` (+ `context-map.md` when the domain warrants bounded contexts). No code. |
+| **brainstorm** | "let's brainstorm", "start a new project", "create a vision", "model this from scratch" | `.agenthoff/vision.md` (+ `context-map.md` when warranted). Closes with an architecture foundation pass that emits `type: decision` tasks, a walking-skeleton spike, and (when frontend exists) a styleguide task. No code yet — those land in `todo/` for `work` to execute. |
 | **model** | "I have an idea", "capture this", "refine the auth backlog", "promote X to todo", "there's a bug" | Task markdown files in `contexts/<bc>/backlog\|todo/` with status, dependencies, acceptance criteria. |
 | **work** | "start working", "execute the todo", "let's go", "pick up where you left off" | Code, commits, ADRs. Parallel workers respect the dependency DAG. |
 | **research** | "research X", "state of the art for", "compare options for" | A markdown report in `.agenthoff/knowledge/research/`. Cited by tasks and ADRs. |
@@ -41,16 +41,16 @@ Skills auto-trigger from natural-language phrases — no slash commands to memor
 ## The workflow
 
 ```
-brainstorm  →  vision.md, context-map.md
+brainstorm  →  vision.md, context-map.md, foundation queue (decision tasks + walking-skeleton spike + styleguide task)
     ↓
 model       →  backlog/ (fuzzy) → refined → todo/ (ready)
     ↓
-work        →  doing/ → done/, commits, ADRs, updated BC READMEs
+work        →  doing/ → done/, commits, ADRs, updated BC READMEs  (first prototype = walking-skeleton spike)
     ↑
 research    ←  (called from any of the above when external knowledge is needed)
 ```
 
-- **brainstorm** is Socratic and deliberately produces no code. The output is shared understanding.
+- **brainstorm** is Socratic and deliberately produces no code. The output is shared understanding plus a foundation queue (decision tasks, walking-skeleton spike, styleguide task) so `work`'s first prototype runs on real architecture, and frontend BCs build against a reviewed design system.
 - **model** has three modes: CAPTURE (new ideas), REFINE (deepen a backlog item), PROMOTE (backlog → todo). It routes through the orchestrator to the right specialist.
 - **work** is a loop, not a one-shot. It resumes interrupted sessions, builds the dependency DAG, dispatches up to 3 parallel workers, and picks up tasks promoted mid-run.
 - **research** is called explicitly by you or implicitly when another skill hits an "I don't know enough" wall.
