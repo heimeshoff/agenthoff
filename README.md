@@ -61,7 +61,8 @@ research    ←  (called from any of the above when external knowledge is needed
 ```
 
 - **brainstorm** is Socratic and deliberately produces no code. The output is shared understanding plus a foundation queue (decision tasks, walking-skeleton spike, styleguide task) so `work`'s first prototype runs on real architecture, and frontend BCs build against a reviewed design system.
-- **model** has three modes: CAPTURE (new ideas), REFINE (deepen a backlog item), PROMOTE (backlog → todo). It routes through the orchestrator to the right specialist.
+- **model** has three actions: CAPTURE (new ideas), REFINE (deepen a backlog item), PROMOTE (backlog → todo). It routes through the orchestrator to the right specialist.
+- **brainstorm** and **model** both support six switchable conversational modes — **Interrogator** (default, naive/critical questions), **Suggestor** (smart proposals), **Challenger** (adversarial pushback), **Storyteller** (concrete scenarios), **Facilitator** (scribe stance, humans drive), **Synthesizer** (reflects tensions). Switch mid-session ("be the storyteller", "facilitator mode"). Designed for workshop and group-modeling settings. See `references/modes.md`.
 - **work** is a loop, not a one-shot. It resumes interrupted sessions, builds the dependency DAG, dispatches up to 3 parallel workers, and picks up tasks promoted mid-run.
 - **research** is called explicitly by you or implicitly when another skill hits an "I don't know enough" wall.
 

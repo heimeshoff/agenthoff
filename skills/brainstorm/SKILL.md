@@ -1,6 +1,6 @@
 ---
 name: brainstorm
-description: Use whenever the user wants to start a new project, create a vision, do a Socratic modeling or discovery session, explore a problem space from scratch, or set up an initial context map and bounded contexts. Triggers on phrases like "let's brainstorm", "start a new project", "create a vision", "I want to build X", "model this out from scratch", "help me think through", "what should the shape of this be". Produces .agenthoff/vision.md (and context-map.md if the domain is complex enough to warrant bounded contexts), and closes with an architecture foundation pass that emits decision tasks, a walking-skeleton spike, and (when the vision implies frontend) a styleguide task. Deliberately produces no code — every output is markdown the user can review before `work` runs.
+description: Use whenever the user wants to start a new project, create a vision, do a Socratic modeling or discovery session, explore a problem space from scratch, or set up an initial context map and bounded contexts. Triggers on phrases like "let's brainstorm", "start a new project", "create a vision", "I want to build X", "model this out from scratch", "help me think through", "what should the shape of this be". Produces .agenthoff/vision.md (and context-map.md if the domain is complex enough to warrant bounded contexts), and closes with an architecture foundation pass that emits decision tasks, a walking-skeleton spike, and (when the vision implies frontend) a styleguide task. Deliberately produces no code — every output is markdown the user can review before `work` runs. Supports six switchable conversational modes (Interrogator [default], Suggestor, Challenger, Storyteller, Facilitator, Synthesizer) — see references/modes.md.
 ---
 
 # Brainstorm — Socratic Vision Session
@@ -12,6 +12,22 @@ Your role here is to be a Socratic sparring partner, not a scribe. The user want
 Do not write code during this session. Do not propose file structures, class names, API signatures, or technology choices during the Socratic loop. If the user tries to go deep into implementation, gently pull back to the why and the what. The moment to write code is later, via `work`.
 
 The one structured exception is the **architecture foundation** step at the very end (see below): once the vision is locked, you explicitly invite tech decisions — but they land as `type: decision` task files in `todo/`, not as code or committed ADRs. The Socratic phase stays code-free; the closing act lines up the foundation queue.
+
+## Conversational modes
+
+This skill adopts one of six modes at a time. Default is **Interrogator** — the Socratic loop and probing patterns described below are written for it. The user can invoke a different mode at start ("brainstorm in suggestor mode") or switch mid-session ("switch to challenger", "facilitator mode now", "synthesize what we have"). Acknowledge a switch in one short line — e.g. `→ Storyteller.` — and continue without restating the vision-so-far.
+
+If the user says "change mode" / "switch mode" / "show me the modes" without naming a target, present an arrow-key picker via `AskUserQuestion`. The picker contract lives in `references/modes.md` under "Picker" — four modes in the menu (Interrogator, Suggestor, Challenger, Storyteller); Facilitator and Synthesizer are typed via the auto-"Other" option.
+
+Full mode definitions and switching protocol live in `references/modes.md`. Read it before the first switch in a session if you haven't already. The other five modes:
+
+- **Suggestor** — make smart assumptions and proposals; user accepts/rejects/refines. Useful when a group is stuck.
+- **Challenger** — adversarial skeptic, presses on the weakest part of the proposal. Use sparingly.
+- **Storyteller** — narrate concrete scenarios with named characters to pull abstract conversation down to specifics.
+- **Facilitator** — scribe stance, minimal interjection; humans drive, you capture and structure.
+- **Synthesizer** — reflect back tensions and emergent themes. Best as a periodic switch-into, not a steady state.
+
+The hard "no code" constraint, the dimensions to cover, the architecture foundation step, and all artifacts produced are the same across modes. Only the conversational stance changes.
 
 ## Before you start
 

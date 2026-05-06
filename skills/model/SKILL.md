@@ -1,17 +1,17 @@
 ---
 name: model
-description: Use whenever the user wants to capture an idea, bug, feature request, refinement, or change to an existing bounded context — anything from "the button should be green" to "we need a whole new subscription subsystem". Also use when the user wants to refine existing backlog items or promote refined items to ready-to-work. Triggers on phrases like "I have an idea", "let's model this", "capture this", "add this to the backlog", "refine the auth backlog", "promote X to todo", "we should also", "what if we added", "there's a bug", "change the color of", "the domain needs to handle". Creates task markdown files in the appropriate bounded context with the right status, and can spawn deeper modeling sessions via the orchestrator.
+description: Use whenever the user wants to capture an idea, bug, feature request, refinement, or change to an existing bounded context — anything from "the button should be green" to "we need a whole new subscription subsystem". Also use when the user wants to refine existing backlog items or promote refined items to ready-to-work. Triggers on phrases like "I have an idea", "let's model this", "capture this", "add this to the backlog", "refine the auth backlog", "promote X to todo", "we should also", "what if we added", "there's a bug", "change the color of", "the domain needs to handle". Creates task markdown files in the appropriate bounded context with the right status, and can spawn deeper modeling sessions via the orchestrator. Supports six switchable conversational modes (Interrogator [default], Suggestor, Challenger, Storyteller, Facilitator, Synthesizer) during CAPTURE and REFINE — see references/modes.md.
 ---
 
 # Model — Capture, Refine, Promote
 
 The `model` skill is the main entry point for the user's stream of ideas. Every thought — from a one-line bug to a cross-context architectural shift — enters the system here and ends up as a task file in a bounded context.
 
-## The three modes
+## The three actions
 
-Decide which mode applies based on what the user said and the current state of `.agenthoff/`:
+Decide which action applies based on what the user said and the current state of `.agenthoff/`:
 
-| Mode | When | What it does |
+| Action | When | What it does |
 |---|---|---|
 | **CAPTURE** | User is describing something new | Turns the idea into one or more task files. Places them in `backlog/` if under-refined, or `todo/` if the idea is already concrete enough to work on. |
 | **REFINE** | User wants to work through an existing backlog item, OR the user invoked model with no new idea and backlog items exist | Picks a backlog task, deepens it via the orchestrator, splits it if needed, updates acceptance criteria and dependencies. May move to `todo/` if it becomes ready. |
@@ -44,6 +44,28 @@ Read the current state:
 4. `.agenthoff/contexts/*/backlog/*.md` (to understand what's pending)
 
 If no bounded contexts exist yet, and the idea is non-trivial, propose running `brainstorm` first. Small ideas (bug fixes, copy changes) in a greenfield project can get a default `contexts/main/` until real structure emerges.
+
+## Conversational modes
+
+This skill adopts one of six modes during the conversational portions of **CAPTURE** and **REFINE**. The defaults differ by action:
+
+- **CAPTURE defaults to Facilitator** — when the user (or a room) is volunteering a new idea, the scribe stance lets the human(s) drive while you capture and structure. Resist the urge to question or suggest until the idea has been articulated; CAPTURE is fundamentally about not getting in the way of incoming thought.
+- **REFINE defaults to Interrogator** — refinement is where ambiguity gets cornered, so naive/critical questions are the right starting stance. The questioning patterns in the REFINE flow below are written for it.
+
+The user can override the default at invocation ("capture this in challenger mode", "refine auth-003 as the storyteller") or switch mid-action ("switch to suggestor", "synthesize what we have"). Acknowledge a switch in one short line — e.g. `→ Suggestor.` — and continue.
+
+If the user says "change mode" / "switch mode" / "show me the modes" without naming a target, present an arrow-key picker via `AskUserQuestion`. The picker contract lives in `references/modes.md` under "Picker" — four modes in the menu (Interrogator, Suggestor, Challenger, Storyteller); Facilitator and Synthesizer are typed via the auto-"Other" option.
+
+Full mode definitions and switching protocol live in `references/modes.md`. The full set:
+
+- **Interrogator** — naive/critical questions one at a time. REFINE default.
+- **Suggestor** — make smart assumptions and proposals; user accepts/rejects/refines. Useful for tiny captures or stuck refinement.
+- **Challenger** — adversarial skeptic, presses on weak acceptance criteria or shaky scope. Use sparingly.
+- **Storyteller** — narrate concrete scenarios with named characters to surface acceptance criteria from lived behavior.
+- **Facilitator** — scribe stance; minimal interjection, captures and structures what the room says. CAPTURE default.
+- **Synthesizer** — reflect back tensions and emergent themes across the backlog or a refinement thread. Best as a periodic switch-into.
+
+PROMOTE is mostly mechanical (readiness check + file move) and runs the same regardless of mode. Task file format, ID conventions, the styleguide gate, protocol logging, and orchestrator handoffs are all mode-agnostic.
 
 ## CAPTURE flow
 
@@ -89,7 +111,7 @@ If no bounded contexts exist yet, and the idea is non-trivial, propose running `
 
 3. If ready, move the file from `backlog/` to `todo/`. Update its frontmatter `status` field.
 
-4. If not ready, tell the user what's missing and offer to enter REFINE mode on this task.
+4. If not ready, tell the user what's missing and offer to switch to the REFINE action on this task.
 
 ## Task file format
 
